@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -20,6 +21,23 @@ export class UsersService {
   findOne(id: string): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
+  async findByEmailOrUsername(identifier: string): Promise<User | null> {
+    // Regex simples só pra validar estrutura de email
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+  
+    if (isEmail) {
+      // normaliza email para lowercase
+      return this.usersRepository.findOne({
+        where: { email: identifier.toLowerCase().trim() },
+      });
+    }
+  
+    // caso contrário, trata como username
+    return this.usersRepository.findOne({
+        where: { username: identifier.toLowerCase().trim() },     
+      });
+  }
+  
 
   async createUser(username: string, password_raw: string, email: string): Promise<User> {
     const hashedPassword = await bcrypt.hash(password_raw, 10);
