@@ -1,8 +1,10 @@
-import { Controller, Post, UseGuards, Body } from '@nestjs/common';
+import { Controller, Post, UseGuards, Body, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';       
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { UserMeDto } from '../users/dto/user-me.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { User } from '../users/users.entity';
@@ -21,4 +23,12 @@ import { User } from '../users/users.entity';
       // req.user já foi validado pelo LocalAuthGuard
       return this.authService.login(user);
     }
+    @Get('me')
+    @UseGuards(JwtAuthGuard)  // ← Que guard usar?
+    @ApiOperation({ summary: 'Perfil do usuário logado' })
+    @ApiResponse({ status: 200, type: UserMeDto })  // ← Que DTO na response?
+    async me(@CurrentUser() user: User): Promise<UserMeDto> {
+      return this.authService.getMe(user.id)
+    }
+
   }

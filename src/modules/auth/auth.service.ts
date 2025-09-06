@@ -1,9 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { User } from '../users/users.entity';
 import { UserPublicDto } from '../users/dto/user-response.dto';
+import { UserMeDto } from '../users/dto/user-me.dto';
 import * as bcrypt from 'bcrypt';
 
   @Injectable()
@@ -61,4 +62,19 @@ import * as bcrypt from 'bcrypt';
             user: userPublic,
           };
     }
+    async getMe(userId: string): Promise<UserMeDto> {
+      const user = await this.usersService.findOne(userId);
+      if (!user) {
+        throw new NotFoundException(`Usuário com id ${userId} não encontrado`);
+      }
+      const userMe: UserMeDto = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        createdAt: user.createdAt
+      };
+      return userMe;
+
+    }
+
   }
