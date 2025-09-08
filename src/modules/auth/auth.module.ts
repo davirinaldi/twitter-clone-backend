@@ -7,6 +7,8 @@ import { AuthService} from './auth.service';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthController } from './auth.controller';
+import { RefreshToken } from './entities/refresh-token.entity';
+import { RefreshTokenService } from './services/token-management.service';
 
 @Module({
     imports: [
@@ -19,15 +21,17 @@ import { AuthController } from './auth.controller';
             expiresIn: process.env.JWT_ACCESS_EXPIRATION
           },
         }),
-      })
+      }),
+      TypeOrmModule.forFeature([RefreshToken])
     ],
     providers: [
-      AuthService,     // ← Seu service
-      LocalStrategy,   // ← Strategy do login
-      JwtStrategy,     // ← Strategy dos tokens
+      AuthService,        // ← Seu service
+      LocalStrategy,      // ← Strategy do login
+      JwtStrategy,        // ← Strategy dos tokens
+      RefreshTokenService // ← RefreshToken SERVICE, não entity!
     ],
     controllers: [AuthController],
-    exports: [AuthService], // ← Outros módulos podem usar
+    exports: [AuthService,RefreshTokenService], // ← Outros módulos podem usar
   })
 export class AuthModule{}
 
