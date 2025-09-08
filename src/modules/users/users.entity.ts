@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { Role } from '../auth/enums/role.enum';
 
 @Entity({ name: 'users' })
 export class User {
@@ -24,4 +25,11 @@ export class User {
 
   @Column({ default: true })
   isActive!: boolean;
+
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.USER
+  })
+  role!: Role;
 }

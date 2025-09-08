@@ -1,4 +1,5 @@
 import { ApiProperty} from '@nestjs/swagger';
+import { Role } from '../../auth/enums/role.enum';
 
     export class UserMeDto {
 
@@ -13,4 +14,11 @@ import { ApiProperty} from '@nestjs/swagger';
 
         @ApiProperty({ type: String, format: 'date-time' })
         createdAt!: Date;
+
+        @ApiProperty({ 
+          enum: Role, 
+          example: Role.USER,
+          description: 'User role for authorization'
+        })
+        role!: Role;
 }

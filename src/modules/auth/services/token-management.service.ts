@@ -204,13 +204,15 @@ export class RefreshTokenService {
   }
 
   /** Logout global: revoga todos os refresh tokens do usuário. */
-  async revokeAll(userId: string, reason: string = 'global-logout') {
-    await this.repo
+  async revokeAll(userId: string, reason: string = 'global-logout'): Promise<number> {
+    const result = await this.repo
       .createQueryBuilder()
       .update(RefreshToken)
       .set({ revokedAt: () => 'now()', revokedReason: reason })
       .where('user_id = :userId AND revoked_at IS NULL', { userId })
       .execute();
+    
+    return result.affected || 0;
   }
 
   // ---------- Manutenção ----------
@@ -226,6 +228,13 @@ export class RefreshTokenService {
   }
 
   // ---------- Consultas úteis ----------
+
+  /** Busca token específico por ID (para logout context) */
+  async findByTokenId(tokenId: string): Promise<RefreshToken | null> {
+    return this.repo.findOne({
+      where: { id: tokenId, revokedAt: IsNull() }
+    });
+  }
 
   async listActiveByUser(userId: string) {
     return this.repo.find({

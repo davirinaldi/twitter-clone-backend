@@ -1,4 +1,5 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { Role } from '../../auth/enums/role.enum';
 
 export class UserResponseDto {
   @ApiProperty({ example: '12345' })
@@ -9,6 +10,13 @@ export class UserResponseDto {
 
   @ApiProperty({ type: String, format: 'date-time' })
   createdAt!: Date;
+
+  @ApiProperty({ 
+    enum: Role, 
+    example: Role.USER,
+    description: 'User role for authorization'
+  })
+  role!: Role;
 }
 
 // Variante “pública” sem createdAt
